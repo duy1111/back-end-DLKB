@@ -95,9 +95,7 @@ let createNewUser = (data) => {
                     errCode: 1,
                     message: 'Your email is already used, Plz try author email',
                 });
-            }
-            else{
-
+            } else {
                 let hashPasswordFromBcrypt = await hashUserPassword(data.password);
                 await db.User.create({
                     email: data.email,
@@ -114,7 +112,6 @@ let createNewUser = (data) => {
                     message: 'ok',
                 });
             }
-            
         } catch (e) {
             reject(e);
         }
@@ -132,26 +129,29 @@ let hashUserPassword = (password) => {
 };
 let updateUser = (data) => {
     return new Promise(async (resolve, reject) => {
-
         try {
-            if(!data.id){
+            if (!data.id) {
                 resolve({
-                    errCode:2,
-                    message:'Missing required parameters'
-                })
+                    errCode: 2,
+                    message: 'Missing required parameters',
+                });
+            } else {
             }
             let Users = await db.User.findOne({ where: { id: data.id } });
-            console.log('check',Users);
+
             if (Users) {
-                Users.firstName = data.firstName,
-                
-                Users.lastName = data.lastName,
-                Users.email = data.email,
-                Users.address = data.address,
-                await Users.save();
+                (Users.firstName = data.firstName),
+                    (Users.lastName = data.lastName),
+                    (Users.email = data.email),
+                    (Users.address = data.address),
+                    await Users.save();
                 Users.errCode = 0;
                 Users.message = 'ok';
-                resolve(Users);
+                resolve({
+                    Users,
+                    errCode: 0,
+                    message: 'ok',
+                });
                 //deo biet loi gi
                 // await db.User.save({
                 //     firstName: data.firstName,
@@ -159,18 +159,13 @@ let updateUser = (data) => {
                 //     email: data.email,
                 //     address: data.address,
                 // });
-                resolve({
-                    errCode : 0,
-                    message : 'ok'
-                })
             } else {
                 resolve({
-                    errCode : 1,
-                    message : 'user not found'
-                })
+                    errCode: 1,
+                    message: 'user not found',
+                });
             }
         } catch (e) {
-            console.log('test');
             reject(e);
         }
     });
@@ -191,7 +186,31 @@ let deleteUser = (id) => {
                 message: 'delete user success',
             });
         } catch (e) {
-            reject(e)
+            reject(e);
+        }
+    });
+};
+let getAllCodeServices = (typeInput) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!typeInput) {
+                resolve({
+                    errCode: 1,
+                    message: 'Missing required parameters !'
+                })
+            } else {
+                let res = {};
+                let allCode = await db.allCodes.findAll({
+                    where: {
+                        type: typeInput,
+                    },
+                });
+                res.errCode = 0;
+                res.data = allCode;
+                resolve(res);
+            }
+        } catch (e) {
+            reject(e);
         }
     });
 };
@@ -201,4 +220,5 @@ module.exports = {
     createNewUser: createNewUser,
     updateUser: updateUser,
     deleteUser: deleteUser,
+    getAllCodeServices: getAllCodeServices,
 };
