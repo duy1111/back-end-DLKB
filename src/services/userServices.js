@@ -12,7 +12,7 @@ let handleUserLogin = (email, password) => {
 
                 let user = await db.User.findOne({
                     where: { email: email },
-                    attributes: ['email', 'roleId', 'password'],
+                    attributes: ['email', 'roleId', 'password', 'firstName', 'lastName'],
                     raw: true,
                 });
                 if (user) {
@@ -21,7 +21,6 @@ let handleUserLogin = (email, password) => {
                     let check = await bcrypt.compareSync(password, user.password); // false
                     if (check) {
                         delete user.password;
-                        console.log(user);
                         userData.errCode = 0;
                         userData.message = 'ok';
                         userData.user = user;
@@ -73,7 +72,7 @@ let getAllUser = (id) => {
             if (id) {
                 users = await db.User.findOne({ where: { id: id }, raw: true, attributes: { exclude: ['password'] } });
                 //delete users.password;
-                console.log('tesstt', users);
+
                 resolve(users);
             }
             users = await db.User.findAll({ raw: true, attributes: { exclude: ['password'] } });
@@ -103,8 +102,9 @@ let createNewUser = (data) => {
                     firstName: data.firstName,
                     lastName: data.lastName,
                     address: data.address,
-                    gender: data.gender === '1' ? true : false,
+                    gender: data.gender,
                     roleId: data.roleId,
+                    positionId: data.positionId,
                     phoneNumber: data.phoneNumber,
                 });
                 resolve({
@@ -128,9 +128,10 @@ let hashUserPassword = (password) => {
     });
 };
 let updateUser = (data) => {
+    console.log('check data',data)
     return new Promise(async (resolve, reject) => {
         try {
-            if (!data.id) {
+            if (!data.id || !data.roleId || !data.positionId || !data.gender) {
                 resolve({
                     errCode: 2,
                     message: 'Missing required parameters',
@@ -142,8 +143,11 @@ let updateUser = (data) => {
             if (Users) {
                 (Users.firstName = data.firstName),
                     (Users.lastName = data.lastName),
-                    (Users.email = data.email),
                     (Users.address = data.address),
+                    (Users.roleId = data.roleId),
+                    (Users.positionId = data.positionId),
+                    (Users.phoneNumber = data.phoneNumber),
+                    (Users.gender = data.gender),
                     await Users.save();
                 Users.errCode = 0;
                 Users.message = 'ok';
@@ -196,8 +200,8 @@ let getAllCodeServices = (typeInput) => {
             if (!typeInput) {
                 resolve({
                     errCode: 1,
-                    message: 'Missing required parameters !'
-                })
+                    message: 'Missing required parameters !',
+                });
             } else {
                 let res = {};
                 let allCode = await db.allCodes.findAll({
