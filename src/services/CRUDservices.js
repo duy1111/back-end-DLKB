@@ -44,7 +44,7 @@ let readUser = () => {
     });
 };
 let getEditUserId = (id) => {
-    console.log(id);
+   
     return new Promise(async (resolve, reject) => {
         try {
             let User = await db.User.findOne({ where: { id: id }, raw: true });

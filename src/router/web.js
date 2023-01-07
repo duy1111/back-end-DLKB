@@ -8,6 +8,7 @@ import getHomePage, {
     putUser,
 } from '../controller/homeController';
 import userController from '../controller/userController';
+import doctorController from '../controller/doctorController';
 let router = express.Router();
 
 function initWebRoutes(app) {
@@ -24,7 +25,7 @@ function initWebRoutes(app) {
     router.post('/api/create-new-user', userController.handleCreateNewUser);
     router.put('/api/update-user', userController.handleUpdateUser);
     router.delete('/api/delete-user',userController.handleDeleteUser);
-
+    router.get('/api/top-doctor-home',doctorController.getTopDoctorHome)
 
     router.get('/api/allCode', userController.getAllCode);
     return app.use('/', router);

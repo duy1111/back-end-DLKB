@@ -14,7 +14,7 @@ module.exports = {
     */
      return queryInterface.bulkInsert('Users', [{
       email: 'admin@gmail.com',
-      password:'123456', //plain text
+      password:'null', //plain text
       firstName: 'Duy',
       lastName: 'Mai',
       address:'Da Nang city',

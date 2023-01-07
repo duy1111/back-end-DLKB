@@ -106,6 +106,7 @@ let createNewUser = (data) => {
                     roleId: data.roleId,
                     positionId: data.positionId,
                     phoneNumber: data.phoneNumber,
+                    image: data.avatar,
                 });
                 resolve({
                     errCode: 0,
@@ -128,7 +129,7 @@ let hashUserPassword = (password) => {
     });
 };
 let updateUser = (data) => {
-    console.log('check data',data)
+  
     return new Promise(async (resolve, reject) => {
         try {
             if (!data.id || !data.roleId || !data.positionId || !data.gender) {
@@ -147,7 +148,11 @@ let updateUser = (data) => {
                     (Users.roleId = data.roleId),
                     (Users.positionId = data.positionId),
                     (Users.phoneNumber = data.phoneNumber),
-                    (Users.gender = data.gender),
+                    (Users.gender = data.gender)
+                    if (data.avatar){
+                        Users.image = data.avatar
+                    }
+                    
                     await Users.save();
                 Users.errCode = 0;
                 Users.message = 'ok';
