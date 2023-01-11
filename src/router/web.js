@@ -25,10 +25,12 @@ function initWebRoutes(app) {
     router.post('/api/create-new-user', userController.handleCreateNewUser);
     router.put('/api/update-user', userController.handleUpdateUser);
     router.delete('/api/delete-user',userController.handleDeleteUser);
+
+
     router.get('/api/top-doctor-home',doctorController.getTopDoctorHome);
     router.get('/api/get-all-doctor',doctorController.getAllDoctors);
     router.post('/api/save-info-doctor',doctorController.postInfoDoctor)
-
+    router.get('/api/get-detail-doctor-by-id',doctorController.getDetailDoctorById)
     router.get('/api/allCode', userController.getAllCode);
     return app.use('/', router);
 }
