@@ -30,6 +30,7 @@
     "sequelize-cli": "^6.5.2"
   },
   "dependencies": {
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "lodash": "^4.17.21"
   }
 }
