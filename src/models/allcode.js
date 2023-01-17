@@ -9,10 +9,13 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            allCodes.hasMany(models.User, {foreignKey:'positionId',as:'positionData'})
-            allCodes.hasMany(models.User, {foreignKey:'gender', as:'genderData'})
-            allCodes.hasMany(models.Schedule, {foreignKey:'timeType', as:'timeTypeData'})
+            allCodes.hasMany(models.User, { foreignKey: 'positionId', as: 'positionData' });
+            allCodes.hasMany(models.User, { foreignKey: 'gender', as: 'genderData' });
+            allCodes.hasMany(models.Schedule, { foreignKey: 'timeType', as: 'timeTypeData' });
 
+            allCodes.hasMany(models.Doctor_Infor, { foreignKey: 'priceId', as: 'priceTypeData' });
+            allCodes.hasMany(models.Doctor_Infor, { foreignKey: 'paymentId', as: 'paymentTypeData' });
+            allCodes.hasMany(models.Doctor_Infor, { foreignKey: 'provinceId', as: 'provinceTypeData' });
         }
     }
     allCodes.init(
@@ -25,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         {
             sequelize,
             modelName: 'allCodes',
+            
         },
     );
     return allCodes;

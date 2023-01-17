@@ -9,6 +9,23 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            Doctor_Infor.belongsTo(models.User, { foreignKey: 'doctorId' });
+
+            Doctor_Infor.belongsTo(models.allCodes, {
+                foreignKey: 'priceId',
+                targetKey: 'keyMap',
+                as: 'priceTypeData',
+            });
+            Doctor_Infor.belongsTo(models.allCodes, {
+                foreignKey: 'paymentId',
+                targetKey: 'keyMap',
+                as: 'paymentTypeData',
+            });
+            Doctor_Infor.belongsTo(models.allCodes, {
+                foreignKey: 'provinceId',
+                targetKey: 'keyMap',
+                as: 'provinceTypeData',
+            });
         }
     }
     Doctor_Infor.init(
@@ -25,6 +42,8 @@ module.exports = (sequelize, DataTypes) => {
         {
             sequelize,
             modelName: 'Doctor_Infor',
+            freezeTableName: true,
+           
         },
     );
     return Doctor_Infor;

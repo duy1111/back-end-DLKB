@@ -9,16 +9,16 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            User.belongsTo(models.allCodes,{foreignKey:'positionId',targetKey:'keyMap',as:'positionData'})
-            User.belongsTo(models.allCodes,{foreignKey:'gender',targetKey:'keyMap',as:'genderData'})
-            User.hasOne(models.Markdown,{foreignKey:'doctorId', })
-            
+            User.belongsTo(models.allCodes, { foreignKey: 'positionId', targetKey: 'keyMap', as: 'positionData' });
+            User.belongsTo(models.allCodes, { foreignKey: 'gender', targetKey: 'keyMap', as: 'genderData' });
+            User.hasOne(models.Markdown, { foreignKey: 'doctorId' });
+            User.hasOne(models.Doctor_Infor, { foreignKey: 'doctorId' });
         }
     }
     User.init(
         {
             email: DataTypes.STRING,
-            password:DataTypes.STRING,
+            password: DataTypes.STRING,
             firstName: DataTypes.STRING,
             lastName: DataTypes.STRING,
             address: DataTypes.STRING,
@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         {
             sequelize,
             modelName: 'User',
-            timestamps: true ,
+            
         },
     );
     return User;
