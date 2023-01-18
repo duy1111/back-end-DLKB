@@ -138,7 +138,6 @@ let getDetailDoctorById = (id) => {
                                 { model: db.allCodes, as: 'priceTypeData', attributes: ['valueEn', 'valueVi'] },
                                 { model: db.allCodes, as: 'paymentTypeData', attributes: ['valueEn', 'valueVi'] },
                                 { model: db.allCodes, as: 'provinceTypeData', attributes: ['valueEn', 'valueVi'] },
-
                             ],
                         },
                         { model: db.allCodes, as: 'positionData', attributes: ['valueEn', 'valueVi'] },
@@ -243,6 +242,88 @@ let getScheduleByDate = (id, date) => {
         }
     });
 };
+
+let getExtraInfoDoctorById = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!id) {
+                resolve({
+                    errCode: 1,
+                    message: 'Missing required parameter',
+                });
+            } else {
+                let data = await db.Doctor_Infor.findOne({
+                    where: {
+                        doctorId: id,
+                    },
+                    attributes: { exclude: ['id', 'doctorId'] },
+                    include: [
+                        { model: db.allCodes, as: 'priceTypeData', attributes: ['valueEn', 'valueVi'] },
+                        { model: db.allCodes, as: 'paymentTypeData', attributes: ['valueEn', 'valueVi'] },
+                        { model: db.allCodes, as: 'provinceTypeData', attributes: ['valueEn', 'valueVi'] },
+                    ],
+                    raw: false,
+                    nest: true,
+                });
+                if (!data) {
+                    data = {};
+                }
+                resolve({
+                    errCode: 0,
+                    data: data,
+                });
+            }
+        } catch (e) {
+            console.log('check e', e);
+            reject(e);
+        }
+    });
+};
+let getProfileDoctorById = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!id) {
+                resolve({
+                    errCode: 1,
+                    message: 'Missing required parameter',
+                });
+            } else {
+                let data = await db.User.findOne({
+                    where: { id: id },
+                    attributes: { exclude: ['password'] },
+                    include: [
+                        { model: db.Markdown, attributes: ['description', 'contentHTML', 'contentMarkdown'] },
+                        {
+                            model: db.Doctor_Infor,
+                            attributes: { exclude: ['id', 'doctorId'] },
+                            include: [
+                                { model: db.allCodes, as: 'priceTypeData', attributes: ['valueEn', 'valueVi'] },
+                                { model: db.allCodes, as: 'paymentTypeData', attributes: ['valueEn', 'valueVi'] },
+                                { model: db.allCodes, as: 'provinceTypeData', attributes: ['valueEn', 'valueVi'] },
+                            ],
+                        },
+                        { model: db.allCodes, as: 'positionData', attributes: ['valueEn', 'valueVi'] },
+                    ],
+                    raw: false,
+                    nest: true,
+                });
+
+                if (data && data.image) {
+                    data.image = new Buffer(data.image, 'base64').toString('binary');
+                }
+                if (!data) data = {};
+                resolve({
+                    errCode: 0,
+                    message: 'ok',
+                    data: data,
+                });
+            }
+        } catch (e) {
+            console.log('check e', e);
+            reject(e);
+        }
+    });
+};
 module.exports = {
     getTopDoctorHome: getTopDoctorHome,
     getAllDoctors: getAllDoctors,
@@ -250,4 +331,6 @@ module.exports = {
     getDetailDoctorById: getDetailDoctorById,
     bulkCreateSchedule: bulkCreateSchedule,
     getScheduleByDate: getScheduleByDate,
+    getExtraInfoDoctorById: getExtraInfoDoctorById,
+    getProfileDoctorById: getProfileDoctorById,
 };
