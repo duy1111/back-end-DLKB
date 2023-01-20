@@ -1,6 +1,7 @@
 import db from '../models/index';
 import _ from 'lodash';
 require('dotenv').config();
+
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
 let getTopDoctorHome = (limit) => {
     return new Promise(async (resolve, reject) => {
@@ -223,7 +224,10 @@ let getScheduleByDate = (id, date) => {
             } else {
                 let data = await db.Schedule.findAll({
                     where: { doctorId: id, date: date },
-                    include: [{ model: db.allCodes, as: 'timeTypeData', attributes: ['valueEn', 'valueVi'] }],
+                    include: [
+                        { model: db.allCodes, as: 'timeTypeData', attributes: ['valueEn', 'valueVi'] },
+                        { model: db.User, as: 'doctorData', attributes: ['firstName', 'lastName'] },
+                    ],
                     raw: false,
                     nest: true,
                 });

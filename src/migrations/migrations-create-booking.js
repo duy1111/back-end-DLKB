@@ -24,6 +24,12 @@ module.exports = {
             timeType: {
                 type: Sequelize.STRING,
             },
+            token: {
+                type: Sequelize.STRING,
+            },
+            dayBooking: {
+                type: Sequelize.STRING,
+            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,
