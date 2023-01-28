@@ -9,10 +9,18 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
-            
+
             doctorId: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
+            },
+            specialtyId: {
+                type: Sequelize.INTEGER,
+                
+            },
+            clinicId: {
+                type: Sequelize.INTEGER,
+               
             },
             priceId: {
                 type: Sequelize.STRING,
@@ -40,9 +48,9 @@ module.exports = {
             count: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
-                defaultValue:0
+                defaultValue: 0,
             },
-                   
+
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,

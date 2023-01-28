@@ -93,6 +93,7 @@ let saveDetailInfoDoctor = (data) => {
                         (doctorInfo.note = data.note),
                         (doctorInfo.addressClinic = data.addressClinic),
                         (doctorInfo.nameClinic = data.nameClinic),
+                        doctorInfo.specialtyId = data.specialtyId
                         await doctorInfo.save();
                 } else {
                     await db.Doctor_Infor.create({
@@ -103,6 +104,8 @@ let saveDetailInfoDoctor = (data) => {
                         doctorId: data.doctorId,
                         addressClinic: data.addressClinic,
                         nameClinic: data.nameClinic,
+                        specialtyId : data.specialtyId,
+                        
                     });
                 }
 
