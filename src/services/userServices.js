@@ -12,7 +12,7 @@ let handleUserLogin = (email, password) => {
 
                 let user = await db.User.findOne({
                     where: { email: email },
-                    attributes: ['email', 'roleId', 'password', 'firstName', 'lastName'],
+                    attributes: ['id', 'email', 'roleId', 'password', 'firstName', 'lastName'],
                     raw: true,
                 });
                 if (user) {
@@ -129,7 +129,6 @@ let hashUserPassword = (password) => {
     });
 };
 let updateUser = (data) => {
-  
     return new Promise(async (resolve, reject) => {
         try {
             if (!data.id || !data.roleId || !data.positionId || !data.gender) {
@@ -148,12 +147,12 @@ let updateUser = (data) => {
                     (Users.roleId = data.roleId),
                     (Users.positionId = data.positionId),
                     (Users.phoneNumber = data.phoneNumber),
-                    (Users.gender = data.gender)
-                    if (data.avatar){
-                        Users.image = data.avatar
-                    }
-                    
-                    await Users.save();
+                    (Users.gender = data.gender);
+                if (data.avatar) {
+                    Users.image = data.avatar;
+                }
+
+                await Users.save();
                 Users.errCode = 0;
                 Users.message = 'ok';
                 resolve({

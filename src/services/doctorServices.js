@@ -93,8 +93,9 @@ let saveDetailInfoDoctor = (data) => {
                         (doctorInfo.note = data.note),
                         (doctorInfo.addressClinic = data.addressClinic),
                         (doctorInfo.nameClinic = data.nameClinic),
-                        doctorInfo.specialtyId = data.specialtyId
-                        await doctorInfo.save();
+                        (doctorInfo.specialtyId = data.specialtyId);
+                    doctorInfo.clinicId = data.clinicId;
+                    await doctorInfo.save();
                 } else {
                     await db.Doctor_Infor.create({
                         priceId: data.selectedPrice,
@@ -104,8 +105,8 @@ let saveDetailInfoDoctor = (data) => {
                         doctorId: data.doctorId,
                         addressClinic: data.addressClinic,
                         nameClinic: data.nameClinic,
-                        specialtyId : data.specialtyId,
-                        
+                        specialtyId: data.specialtyId,
+                        clinicId: data.clinicId,
                     });
                 }
 
@@ -331,6 +332,45 @@ let getProfileDoctorById = (id) => {
         }
     });
 };
+let getListPatientForDoctor = (doctorId, date) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!doctorId || !date) {
+                resolve({
+                    errCode: 1,
+                    message: 'Missing required parameter',
+                });
+            } else {
+                let data = await db.bookings.findAll({
+                    where: {
+                        statusId: 'S2',
+                        doctorId: doctorId,
+                        dayBooking: date,
+                    },
+                    include: [
+                        {
+                            model: db.User,
+                            as: 'patientData',
+                            attributes: ['email', 'firstName', 'lastName', 'address', 'gender'],
+                            include: [{ model: db.allCodes, as: 'genderData', attributes: ['valueEn', 'valueVi'] }],
+                        },
+                        { model: db.allCodes, as: 'timeTypeDataPatient', attributes: ['valueEn', 'valueVi'] },
+                    ],
+                    raw: false,
+                    nest: true,
+                });
+                resolve({
+                    errCode: 0,
+                    message: 'ok',
+                    data: data,
+                });
+            }
+        } catch (e) {
+            console.log('check e', e);
+            reject(e);
+        }
+    });
+};
 module.exports = {
     getTopDoctorHome: getTopDoctorHome,
     getAllDoctors: getAllDoctors,
@@ -340,4 +380,5 @@ module.exports = {
     getScheduleByDate: getScheduleByDate,
     getExtraInfoDoctorById: getExtraInfoDoctorById,
     getProfileDoctorById: getProfileDoctorById,
+    getListPatientForDoctor: getListPatientForDoctor,
 };

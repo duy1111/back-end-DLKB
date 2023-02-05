@@ -40,6 +40,9 @@ let postBookAppointment = (data) => {
                         email: data.email,
                         roleId: 'R3',
                         password: hashPasswordFromBcrypt,
+                        address: data.address,
+                        gender: data.gender,
+                        firstName: data.fullName,
                     },
                 });
                 if (user && user[0]) {
@@ -50,6 +53,7 @@ let postBookAppointment = (data) => {
                             timeType: data.timeType,
                             doctorId: data.doctorId,
                         },
+                       
                         defaults: {
                             statusId: 'S1',
                             doctorId: data.doctorId,
