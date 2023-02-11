@@ -26,6 +26,8 @@ module.exports = (sequelize, DataTypes) => {
                 targetKey: 'keyMap',
                 as: 'provinceTypeData',
             });
+           
+
         }
     }
     Doctor_Infor.init(

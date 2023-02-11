@@ -47,6 +47,8 @@ let postInfoDoctor = async(req,res) => {
 }
 let getDetailDoctorById = async(req,res) => {
     try{
+        console.log('check id',req.query.id)
+        console.log('check type id',typeof(req.query.id))
         let info = await doctorServices.getDetailDoctorById(req.query.id);
         return res.status(200).json(info)
     }
@@ -130,6 +132,21 @@ let getListPatientForDoctor = async(req,res) => {
         })
     }
 }
+
+let sendRemedy = async(req,res) => {
+    try{
+        
+        let data = await doctorServices.sendRemedy(req.body);
+        return res.status(200).json(data)
+    }
+    catch(e){
+        console.log(e)
+        return res.status(400).json({
+            errCode : -1,
+            message:'Error from server...'
+        })
+    }
+}
 module.exports = {
     getTopDoctorHome:getTopDoctorHome,
     getAllDoctors:getAllDoctors,
@@ -140,5 +157,6 @@ module.exports = {
     getExtraInfoDoctorById:getExtraInfoDoctorById,
     getProfileDoctorById:getProfileDoctorById,
     getListPatientForDoctor:getListPatientForDoctor,
+    sendRemedy:sendRemedy,
     
 }

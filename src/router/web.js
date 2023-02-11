@@ -6,6 +6,8 @@ import getHomePage, {
     getEditUser,
     getDeleteUser,
     putUser,
+    postWebhook,
+    getWebhook,
 } from '../controller/homeController';
 import userController from '../controller/userController';
 import doctorController from '../controller/doctorController';
@@ -22,6 +24,10 @@ function initWebRoutes(app) {
     router.get('/edit-user/:id', getEditUser);
     router.post('/update-user', putUser);
     router.post('/delete-user/', getDeleteUser);
+
+    router.post('/webhook',postWebhook);
+    router.get('/webhook',getWebhook)
+
     //api
     router.post('/api/login', userController.handleLogin);
     router.get('/api/get-all-user', userController.handleGetAllUsers);
@@ -39,7 +45,9 @@ function initWebRoutes(app) {
     router.get('/api/get-extra-info-doctor-by-id', doctorController.getExtraInfoDoctorById);
     router.get('/api/get-profile-doctor-by-id', doctorController.getProfileDoctorById);
 
-    router.get('/api/get-list-patient-for-doctor',doctorController.getListPatientForDoctor)
+    router.get('/api/get-list-patient-for-doctor',doctorController.getListPatientForDoctor);
+    router.post('/api/send-remedy', doctorController.sendRemedy);
+
 
     router.post('/api/patient-book-appointment', patientController.postBookAppointment);
     router.post('/api/verify-book-appointment', patientController.postVerifyBookAppointment);
