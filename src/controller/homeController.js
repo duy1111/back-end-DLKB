@@ -3,7 +3,9 @@ require('dotenv').config();
 import CRUDservices from '../services/CRUDservices';
 async function getHomePage(req, res) {
     try {
-        let data = await db.User.findAll();
+        let data = await db.User.findAll({
+            attributes: { exclude: ['image'] }
+        });
 
         return res.render('homePage.ejs', { data: JSON.stringify(data) });
     } catch (e) {
