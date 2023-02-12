@@ -10,16 +10,15 @@ dotenv.config();
 let app = express();
 
 // parse application/json
-app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.json({ limit: '50mb' }));
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false,limit: '50mb' }));
+app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 
 //app.use(cors());
 app.use(function (req, res, next) {
-
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Origin', process.env.URL_REACT);
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -38,7 +37,7 @@ app.use(function (req, res, next) {
 // Verify that the callback came from Facebook.
 // function verifyRequestSignature(req, res, buf) {
 //     var signature = req.headers["x-hub-signature-256"];
-  
+
 //     if (!signature) {
 //       console.warn(`Couldn't find "x-hub-signature-256" in headers.`);
 //     } else {
