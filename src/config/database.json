@@ -18,10 +18,13 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": "postgres",
+    "password": "Duymai0605!@#",
+    "database": "postgres",
+    "host": "db.tnjgdbadurajzgyevukm.supabase.co",
+    "dialect": "postgres",
+    "port":"5432",
+    "logging": false,
+    "timezone":"+07:00"
   }
 }
