@@ -44,7 +44,7 @@ let getAllSpecialty = () => {
         }
     });
 };
-let getDetailSpecialtyById = async(id, location) => {
+let getDetailSpecialtyById = async (id, location) => {
     return new Promise(async (resolve, reject) => {
         try {
             if (!id || !location) {
@@ -60,41 +60,91 @@ let getDetailSpecialtyById = async(id, location) => {
                         id: id,
                     },
                     attributes: ['descriptionHTML', 'descriptionMarkdown'],
-                    raw:true
+                    raw: true,
                 });
 
                 if (data) {
                     //
                     let doctorSpecialty = [];
-                    if(location === 'ALL'){
+                    if (location === 'ALL') {
                         doctorSpecialty = await db.Doctor_Infor.findAll({
                             where: {
                                 specialtyId: id,
                             },
                             attributes: ['doctorId', 'provinceId'],
-                            raw:true,
+                            raw: true,
                         });
-                    }
-                    else{
+                    } else {
                         doctorSpecialty = await db.Doctor_Infor.findAll({
                             where: {
-                                specialtyId: id, provinceId:location
+                                specialtyId: id,
+                                provinceId: location,
                             },
                             attributes: ['doctorId', 'provinceId'],
-                            raw:true,
+                            raw: true,
                         });
                     }
-                    
-                    data.doctorSpecialty = doctorSpecialty;
-                  
 
+                    data.doctorSpecialty = doctorSpecialty;
                 } else {
                     data = {};
                 }
                 resolve({
                     errCode: 0,
                     message: 'ok',
-                    data:data
+                    data: data,
+                });
+            }
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+let handleDeleteSpecialty = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let specialty = await db.specialty.findOne({ where: { id: id } });
+            if (!specialty) {
+                resolve({
+                    errCode: 2,
+                    message: 'the clinic not exist',
+                });
+            }
+            await specialty.destroy();
+            resolve({
+                errCode: 0,
+                message: 'delete specialty success',
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+let handleUpdateSpecialty = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!data.name || !data.descriptionHTML || !data.descriptionMarkdown) {
+                resolve({
+                    errCode: 1,
+                    message: 'Missing parameter!',
+                });
+            } else {
+                let specialty = await db.specialty.findOne({
+                    where: { id: data.specialtyId },
+                    raw: false,
+                });
+                if (specialty) {
+                    (specialty.name = data.name),
+                        (specialty.descriptionHTML = data.descriptionHTML),
+                        (specialty.descriptionMarkdown = data.descriptionMarkdown),
+                        (specialty.image = data.imageBase64),
+                        await specialty.save();
+                }
+
+                resolve({
+                    errCode: 0,
+                    message: 'update a new clinic succeed!',
                 });
             }
         } catch (e) {
@@ -106,4 +156,6 @@ module.exports = {
     createSpecialty: createSpecialty,
     getAllSpecialty: getAllSpecialty,
     getDetailSpecialtyById: getDetailSpecialtyById,
+    handleDeleteSpecialty: handleDeleteSpecialty,
+    handleUpdateSpecialty: handleUpdateSpecialty,
 };

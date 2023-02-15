@@ -25,7 +25,38 @@ let createClinic = (data) => {
         }
     });
 };
+let handleUpdateClinic = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!data.name || !data.descriptionHTML || !data.descriptionMarkdown) {
+                resolve({
+                    errCode: 1,
+                    message: 'Missing parameter!',
+                });
+            } else {
+                let clinics = await db.clinics.findOne({
+                    where: { id: data.clinicId },
+                    raw: false,
+                });
+                if (clinics) {
+                    (clinics.name = data.name),
+                        (clinics.descriptionHTML = data.descriptionHTML),
+                        (clinics.descriptionMarkdown = data.descriptionMarkdown),
+                        (clinics.image = data.imageBase64),
+                        (clinics.address = data.address),
+                        await clinics.save();
+                }
 
+                resolve({
+                    errCode: 0,
+                    message: 'update a new clinic succeed!',
+                });
+            }
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
 let getAllClinic = () => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -96,8 +127,30 @@ let getDetailClinicById = (id) => {
         }
     });
 };
+let handleDeleteClinic = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let clinic = await db.clinics.findOne({ where: { id: id } });
+            if (!clinic) {
+                resolve({
+                    errCode: 2,
+                    message: 'the clinic not exist',
+                });
+            }
+            await clinic.destroy();
+            resolve({
+                errCode: 0,
+                message: 'delete clinic success',
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
 module.exports = {
     createClinic: createClinic,
     getAllClinic: getAllClinic,
     getDetailClinicById: getDetailClinicById,
+    handleDeleteClinic: handleDeleteClinic,
+    handleUpdateClinic: handleUpdateClinic,
 };

@@ -55,10 +55,17 @@ function initWebRoutes(app) {
     router.post('/api/create-new-specialty', specialtyController.createSpecialty);
     router.get('/api/get-all-specialty', specialtyController.getAllSpecialty);
     router.get('/apt/get-detail-specialty-by-id', specialtyController.getDetailSpecialtyById);
+    router.delete('/api/delete-specialty', specialtyController.handleDeleteSpecialty);
+    router.put('/api/update-specialty', specialtyController.handleUpdateSpecialty);
 
     router.post('/api/create-new-clinic', clinicController.createClinic);
     router.get('/api/get-all-clinic',clinicController.getAllClinic);
-    router.get('/apt/get-detail-clinic-by-id',clinicController.getDetailClinicById)
+    router.get('/apt/get-detail-clinic-by-id',clinicController.getDetailClinicById);
+    router.delete('/api/delete-clinic', clinicController.handleDeleteClinic);
+    router.put('/api/update-clinic', clinicController.handleUpdateClinic);
+
+
+
     return app.use('/', router);
 }
 

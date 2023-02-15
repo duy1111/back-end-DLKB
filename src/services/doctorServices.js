@@ -1,7 +1,8 @@
 import db from '../models/index';
 import _ from 'lodash';
 require('dotenv').config();
-
+import emailServices from './emailServices';
+import { v4 as uuidv4 } from 'uuid';
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
 let getTopDoctorHome = (limit) => {
     return new Promise(async (resolve, reject) => {
@@ -371,6 +372,38 @@ let getListPatientForDoctor = (doctorId, date) => {
         }
     });
 };
+
+let sendRemedy = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            await emailServices.sendAttachment(data);
+            console.log('check data',data)
+            
+            let appointment = await db.bookings.findOne({
+                where: {
+                    doctorId: data.doctorId,
+                    dayBooking: data.dayBooking,
+                    statusId: 'S2',
+                    timeType: data.timeType,
+                    patientId: data.patientId,
+                },
+                raw: false,
+            });
+            console.log('check app',appointment)
+            if (appointment) {
+                appointment.statusId = 'S3';
+                await appointment.save();
+                resolve({
+                    errCode: 0,
+                    message: 'update the appointment succeed!',
+                });
+            }
+        } catch (e) {
+            console.log('check e', e);
+            reject(e);
+        }
+    });
+};
 module.exports = {
     getTopDoctorHome: getTopDoctorHome,
     getAllDoctors: getAllDoctors,
@@ -381,4 +414,5 @@ module.exports = {
     getExtraInfoDoctorById: getExtraInfoDoctorById,
     getProfileDoctorById: getProfileDoctorById,
     getListPatientForDoctor: getListPatientForDoctor,
+    sendRemedy: sendRemedy,
 };
