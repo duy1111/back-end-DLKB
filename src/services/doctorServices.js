@@ -201,7 +201,7 @@ let bulkCreateSchedule = (data) => {
                 let toCreate = _.differenceWith(schedule, existing, (a, b) => {
                     return a.timeType === b.timeType && +a.date === +b.date;
                 });
-                console.log(toCreate);
+                
                 //create data
                 if (toCreate && toCreate.length > 0) {
                     await db.Schedule.bulkCreate(toCreate);
@@ -236,7 +236,7 @@ let getScheduleByDate = (id, date) => {
                     raw: false,
                     nest: true,
                 });
-                console.log('check ne', data);
+               
                 if (!data) {
                     data = [];
                 }

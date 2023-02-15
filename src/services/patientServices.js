@@ -15,7 +15,7 @@ let buildUrlEmail = (doctorId, token) => {
 let postBookAppointment = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log('check data', data.dateBooking);
+            
             if (!data.email || !data.doctorId || !data.timeType || !data.date || !data.fullName || !data.dateBooking) {
                 resolve({
                     errCode: 1,

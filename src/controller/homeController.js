@@ -22,7 +22,7 @@ async function postCRUD(req, res) {
     return res.send('post crud');
 }
 let displayCRUD = async (req, res) => {
-    console.log(req.params);
+    
     let data = await CRUDservices.readUser(req.params);
 
     return res.render('displayCRUD.ejs', { dataUser: data });

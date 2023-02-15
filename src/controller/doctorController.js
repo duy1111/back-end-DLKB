@@ -62,7 +62,7 @@ let getDetailDoctorById = async(req,res) => {
 }
 let bulkCreateSchedule = async(req,res) => {
     try{
-        console.log(req.body)
+        
         let data = await doctorServices.bulkCreateSchedule(req.body);
         return res.status(200).json(data)
     }
@@ -76,7 +76,7 @@ let bulkCreateSchedule = async(req,res) => {
 }
 let getScheduleByDate = async(req,res) => {
     try{
-        console.log(req.query)
+       
         let data = await doctorServices.getScheduleByDate(req.query.doctorId, req.query.date);
         return res.status(200).json(data)
     }
