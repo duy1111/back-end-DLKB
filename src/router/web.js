@@ -14,6 +14,7 @@ import doctorController from '../controller/doctorController';
 import patientController from '../controller/patientController';
 import specialtyController from '../controller/specialtyController';
 import clinicController from '../controller/clinicController';
+import handleController from '../controller/handbookController'
 let router = express.Router();
 
 function initWebRoutes(app) {
@@ -63,6 +64,17 @@ function initWebRoutes(app) {
     router.get('/apt/get-detail-clinic-by-id',clinicController.getDetailClinicById);
     router.delete('/api/delete-clinic', clinicController.handleDeleteClinic);
     router.put('/api/update-clinic', clinicController.handleUpdateClinic);
+
+    router.post('/api/create-new-handbook',handleController.createHandbook);
+    router.get('/api/get-all-handbook',handleController.getAllHandbook);
+    router.get('/apt/get-detail-handbook-by-id',handleController.getDetailHandbookById);
+    router.put('/api/update-handbook',handleController.handleUpdateHandbook);
+    router.delete('/api/delete-handbook',handleController.handleDeleteHandbook);
+
+    router.get('/api/get-handbook-not-approved-yet',handleController.handbookNotApprovedYet);
+    router.post('/api/post-handbook-approved-yet',handleController.handbookApprovedYet);
+    router.get('/api/get-handbook-done-handbook',handleController.DoneHandbook)
+
 
 
 
