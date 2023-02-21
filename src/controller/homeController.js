@@ -1,6 +1,7 @@
 import db from '../models/index';
 require('dotenv').config();
 import CRUDservices from '../services/CRUDservices';
+import request from 'request';
 async function getHomePage(req, res) {
     try {
         let data = await db.User.findAll({
@@ -52,8 +53,7 @@ let getDeleteUser = async (req, res) => {
 };
 
 let getWebhook = async (req, res) => {
-
-    let VERYFY_TOKEN = process.env.VERYFY_TOKEN
+    let VERYFY_TOKEN = process.env.VERYFY_TOKEN;
     // Parse the query params
     let mode = req.query['hub.mode'];
     let token = req.query['hub.verify_token'];
@@ -80,10 +80,21 @@ let postWebhook = async (req, res) => {
     if (body.object === 'page') {
         // Iterate over each entry - there may be multiple if batched
         body.entry.forEach(function (entry) {
-            // Get the webhook event. entry.messaging is an array, but
-            // will only ever contain one event, so we get index 0
+            // Gets the body of the webhook event
             let webhook_event = entry.messaging[0];
             console.log(webhook_event);
+
+            // Get the sender PSID
+            let sender_psid = webhook_event.sender.id;
+            console.log('Sender PSID: ' + sender_psid);
+
+            // Check if the event is a message or postback and
+            // pass the event to the appropriate handler function
+            if (webhook_event.message) {
+                handleMessage(sender_psid, webhook_event.message);
+            } else if (webhook_event.postback) {
+                handlePostback(sender_psid, webhook_event.postback);
+            }
         });
 
         // Return a '200 OK' response to all events
@@ -93,5 +104,52 @@ let postWebhook = async (req, res) => {
         res.sendStatus(404);
     }
 };
+
+// Handles messages events
+function handleMessage(sender_psid, received_message) {
+    let response;
+
+    // Check if the message contains text
+    if (received_message.text) {
+        // Create the payload for a basic text message
+        response = {
+            text: `You sent the message: "${received_message.text}". Now send me an image!`,
+        };
+    }
+
+    // Sends the response message
+    callSendAPI(sender_psid, response);
+}
+
+// Handles messaging_postbacks events
+function handlePostback(sender_psid, received_postback) {}
+
+// Sends response messages via the Send API
+function callSendAPI(sender_psid, response) {
+    // Construct the message body
+    let request_body = {
+        recipient: {
+            id: sender_psid,
+        },
+        message: response,
+    };
+
+    // Send the HTTP request to the Messenger Platform
+    request(
+        {
+            uri: 'https://graph.facebook.com/v2.6/me/messages',
+            qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
+            method: 'POST',
+            json: request_body,
+        },
+        (err, res, body) => {
+            if (!err) {
+                console.log('message sent!');
+            } else {
+                console.error('Unable to send message:' + err);
+            }
+        },
+    );
+}
 export { getCRUD, postCRUD, displayCRUD, getEditUser, getDeleteUser, putUser, getWebhook, postWebhook };
 export default getHomePage;
