@@ -17,6 +17,7 @@ let getTopDoctorHome = (limit) => {
                     { model: db.allCodes, as: 'genderData', attributes: ['valueEn', 'valueVi'] },
                 ],
             });
+            
             resolve(users);
         } catch (e) {
             reject(e);

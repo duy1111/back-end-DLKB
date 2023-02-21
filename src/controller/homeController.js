@@ -4,7 +4,7 @@ import CRUDservices from '../services/CRUDservices';
 async function getHomePage(req, res) {
     try {
         let data = await db.User.findAll({
-            attributes: { exclude: ['image'] }
+            attributes: { exclude: ['image'] },
         });
 
         return res.render('homePage.ejs', { data: JSON.stringify(data) });
@@ -22,7 +22,6 @@ async function postCRUD(req, res) {
     return res.send('post crud');
 }
 let displayCRUD = async (req, res) => {
-    
     let data = await CRUDservices.readUser(req.params);
 
     return res.render('displayCRUD.ejs', { dataUser: data });
@@ -53,6 +52,8 @@ let getDeleteUser = async (req, res) => {
 };
 
 let getWebhook = async (req, res) => {
+
+    let VERYFY_TOKEN = process.env.VERYFY_TOKEN
     // Parse the query params
     let mode = req.query['hub.mode'];
     let token = req.query['hub.verify_token'];
@@ -61,7 +62,7 @@ let getWebhook = async (req, res) => {
     // Check if a token and mode is in the query string of the request
     if (mode && token) {
         // Check the mode and token sent is correct
-        if (mode === 'subscribe' && token === 'YOUR-VERIFY-TOKEN') {
+        if (mode === 'subscribe' && token === VERYFY_TOKEN) {
             // Respond with the challenge token from the request
             console.log('WEBHOOK_VERIFIED');
             res.status(200).send(challenge);
@@ -72,16 +73,21 @@ let getWebhook = async (req, res) => {
     }
 };
 let postWebhook = async (req, res) => {
+    // Parse the request body from the POST
     let body = req.body;
 
-    console.log(`\u{1F7EA} Received webhook:`);
-    console.dir(body, { depth: null });
+    // Check the webhook event is from a Page subscription
     if (body.object === 'page') {
-        // Returns a '200 OK' response to all requests
+        // Iterate over each entry - there may be multiple if batched
+        body.entry.forEach(function (entry) {
+            // Get the webhook event. entry.messaging is an array, but
+            // will only ever contain one event, so we get index 0
+            let webhook_event = entry.messaging[0];
+            console.log(webhook_event);
+        });
+
+        // Return a '200 OK' response to all events
         res.status(200).send('EVENT_RECEIVED');
-        //...
-        // Determine which webhooks were triggered and get sender PSIDs and locale, message content and more.
-        //...
     } else {
         // Return a '404 Not Found' if event is not from a page subscription
         res.sendStatus(404);
