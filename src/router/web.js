@@ -7,7 +7,7 @@ import getHomePage, {
     getDeleteUser,
     putUser,
     postWebhook,
-    getWebhook,
+    getWebhook,setupProfile,
 } from '../controller/homeController';
 import userController from '../controller/userController';
 import doctorController from '../controller/doctorController';
@@ -19,6 +19,7 @@ let router = express.Router();
 
 function initWebRoutes(app) {
     router.get('/', getHomePage);
+    router.post('/setup-profile',setupProfile)
     router.get('/crud', getCRUD);
     router.post('/post-crud', postCRUD);
     router.get('/get-crud', displayCRUD);

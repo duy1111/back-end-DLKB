@@ -196,5 +196,32 @@ function callSendAPI(sender_psid, response) {
         },
     );
 }
-export { getCRUD, postCRUD, displayCRUD, getEditUser, getDeleteUser, putUser, getWebhook, postWebhook };
+let setupProfile = async(req,res) =>{
+    //call facebook api
+     // Construct the message body
+    let request_body = {
+        "get_started":{"payload":"GET_STARTED"},
+        "whitelisted_domains":["https://pbl-be-bookingcare.onrender.com/"]
+    };
+
+    // Send the HTTP request to the Messenger Platform
+    await request(
+        {
+            uri: `https://graph.facebook.com/v16.0/me/messenger_profile?access_token=${process.env.PAGE_ACCESS_TOKEN}>`,
+            qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
+            method: 'POST',
+            json: request_body,
+        },
+        (err, res, body) => {
+            console.log(body)
+            if (!err) {
+                console.log('setup user');
+            } else {
+                console.error('Unable to send message:' + err);
+            }
+        },
+    );
+    return res.send("okkkkk")
+}
+export { getCRUD, postCRUD, displayCRUD, getEditUser, getDeleteUser, putUser, getWebhook, postWebhook,setupProfile };
 export default getHomePage;
