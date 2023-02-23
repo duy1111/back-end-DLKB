@@ -280,7 +280,8 @@ let setupPersistentMenu = async (req, res) => {
         (err, res, body) => {
             console.log(body);
             if (!err) {
-                console.log('setup user');
+
+                console.log('setup persistent menu');
             } else {
                 console.error('Unable to send message:' + err);
             }

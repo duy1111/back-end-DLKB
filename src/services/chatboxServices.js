@@ -65,6 +65,7 @@ let handleGetStarted = (sender_psid) => {
             let response2 = await sendGetStartedTemplate()
             //send text messenger
             await callSendApi(sender_psid,response1)
+            await callSendApi(sender_psid,response2)
             //send text generic template
 
 
