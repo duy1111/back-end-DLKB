@@ -2,6 +2,7 @@ import db from '../models/index';
 require('dotenv').config();
 import CRUDservices from '../services/CRUDservices';
 import request from 'request';
+import chatboxServices from '../services/chatboxServices'
 async function getHomePage(req, res) {
     try {
         let data = await db.User.findAll({
@@ -153,20 +154,32 @@ function handleMessage(sender_psid, received_message) {
 }
 
 // Handles messaging_postbacks events
-function handlePostback(sender_psid, received_postback) {
+async function handlePostback(sender_psid, received_postback) {
     let response;
-  
-  // Get the payload for the postback
-  let payload = received_postback.payload;
 
-  // Set the response based on the postback payload
-  if (payload === 'yes') {
-    response = { "text": "Thanks!" }
-  } else if (payload === 'no') {
-    response = { "text": "Oops, try sending another image." }
-  }
-  // Send the message to acknowledge the postback
-  callSendAPI(sender_psid, response);
+    // Get the payload for the postback
+    let payload = received_postback.payload;
+
+    // Set the response based on the postback payload
+
+    switch (payload) {
+        case 'yes':
+            response = { text: 'Thanks!' };
+            break;
+        case 'no':
+            response = { text: 'Oops, try sending another image.' };
+            break;
+        case 'GET_STARTED':
+            await chatboxServices.handleGetStarted(sender_psid)
+            
+            break;
+        default:
+            response = {text: `oop! I don't know response with postback ${payload}`}
+
+    }
+    
+    // Send the message to acknowledge the postback
+    // callSendAPI(sender_psid, response);
 }
 
 // Sends response messages via the Send API
@@ -196,12 +209,12 @@ function callSendAPI(sender_psid, response) {
         },
     );
 }
-let setupProfile = async(req,res) =>{
+let setupProfile = async (req, res) => {
     //call facebook api
-     // Construct the message body
+    // Construct the message body
     let request_body = {
-        "get_started":{"payload":"GET_STARTED"},
-        "whitelisted_domains":["https://pbl-be-bookingcare.onrender.com/"]
+        get_started: { payload: 'GET_STARTED' },
+        whitelisted_domains: ['https://pbl-be-bookingcare.onrender.com/'],
     };
 
     // Send the HTTP request to the Messenger Platform
@@ -213,7 +226,7 @@ let setupProfile = async(req,res) =>{
             json: request_body,
         },
         (err, res, body) => {
-            console.log(body)
+            console.log(body);
             if (!err) {
                 console.log('setup user');
             } else {
@@ -221,7 +234,59 @@ let setupProfile = async(req,res) =>{
             }
         },
     );
-    return res.send("okkkkk")
+    return res.send('okkkkk');
+};
+
+let setupPersistentMenu = async(req,res) =>{
+//call facebook api
+    // Construct the message body
+    let request_body = {
+        "persistent_menu": [
+            {
+                "locale": "default",
+                "composer_input_disabled": false,
+                "call_to_actions": [
+                    {
+                        "type": "web_url",
+                        "title": "FACEBOOK",
+                        "url": "https://www.facebook.com/Sanji0605",
+                        "webview_height_ratio": "full"
+                    },
+                    {
+                        "type": "web_url",
+                        "title": "FACEBOOK PAGE",
+                        "url": "https://www.facebook.com/profile.php?id=100089976767940",
+                        "webview_height_ratio": "full"
+                        
+                    },
+                    {
+                        "type": "postback",
+                        "title": "Restart",
+                        "payload": "RESTART_BOT"
+                    }
+                ]
+            }
+        ]
+    };
+
+    // Send the HTTP request to the Messenger Platform
+    await request(
+        {
+            uri: `https://graph.facebook.com/v16.0/me/messenger_profile?access_token=${process.env.PAGE_ACCESS_TOKEN}}>`,
+            qs: { access_token: process.env.PAGE_ACCESS_TOKEN },
+            method: 'POST',
+            json: request_body,
+        },
+        (err, res, body) => {
+            console.log(body);
+            if (!err) {
+                console.log('setup user');
+            } else {
+                console.error('Unable to send message:' + err);
+            }
+        },
+    );
+    return res.send('okkkkk');
 }
-export { getCRUD, postCRUD, displayCRUD, getEditUser, getDeleteUser, putUser, getWebhook, postWebhook,setupProfile };
+export { getCRUD, postCRUD, displayCRUD, getEditUser, getDeleteUser, putUser, getWebhook, postWebhook, setupProfile,setupPersistentMenu };
 export default getHomePage;
