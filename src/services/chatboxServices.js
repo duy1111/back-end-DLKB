@@ -115,6 +115,7 @@ let sendGetStartedTemplate = () =>{
             },
         },
     };
+    return response
 }
 module.exports = {
     handleGetStarted: handleGetStarted,
