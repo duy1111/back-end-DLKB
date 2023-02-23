@@ -69,17 +69,12 @@ let handleGetStarted = (sender_psid) => {
                                 title: 'Chào mừng bạn đến với Doctor Booking',
                                 subtitle: 'Dưới đây là các lựa chọn của Doctor Booking',
                                 image_url: IMAGE_GET_STARTED,
+                                default_action: {
+                                    type: 'web_url',
+                                    url: 'https://www.originalcoastclothing.com/',
+                                    webview_height_ratio: 'tall',
+                                },
                                 buttons: [
-                                    {
-                                        type: 'postback',
-                                        title: 'XEM PHÒNG KHÁM',
-                                        payload: 'VIEW_CLINIC',
-                                    },
-                                    {
-                                        type: 'postback',
-                                        title: 'CHỌN BÁC SĨ',
-                                        payload: 'CHOSE_DOCTOR',
-                                    },
                                     {
                                         type: 'postback',
                                         title: 'ĐẶT LỊCH KHÁM',
