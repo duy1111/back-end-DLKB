@@ -174,8 +174,8 @@ async function handlePostback(sender_psid, received_postback) {
             await chatboxServices.handleGetStarted(sender_psid);
 
             break;
-        case 'BOOKING':
-            await chatboxServices.handleBooking(sender_psid);
+        case 'SPECIALTY':
+            await chatboxServices.handleSpecialty(sender_psid);
 
             break;
         case 'DOCTOR_HANOI':
