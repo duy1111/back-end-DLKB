@@ -285,9 +285,9 @@ let handleTopDoctor = (sender_psid, provinceId) => {
                         template_type: 'generic',
                         elements: [
                             data.map((item, index) => {
-                                return({
-                                    title: `Dưới đây là các bác sĩ nổi bật ở ${province}`,
-                                    subtitle: `Bác sĩ ${item.name}`,
+                                return(`{
+                                    title: "Dưới đây là các bác sĩ nổi bật ở ${province}",
+                                    subtitle: "Bác sĩ ${item.name}",
                                     image_url:
                                         'https://plus.unsplash.com/premium_photo-1664475521860-71798f722489?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8Y2xpbmljfGVufDB8fDB8fA%3D%3D&w=1000&q=80',
                                     buttons: [
@@ -297,7 +297,7 @@ let handleTopDoctor = (sender_psid, provinceId) => {
                                             payload: 'VIEW_DETAIL_DOCTOR',
                                         },
                                     ],
-                                });
+                                }`);
                             }),
                         ],
                     },
