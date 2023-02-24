@@ -104,46 +104,127 @@ let handleGetStarted = (sender_psid) => {
         }
     });
 };
-let sendGetStartedTemplate = () => {
-    let response = {
-        attachment: {
-            type: 'template',
-            payload: {
-                template_type: 'generic',
-                elements: [
-                    {
-                        title: 'Chào mừng bạn đến với Doctor Booking',
-                        subtitle: 'Dưới đây là các lựa chọn của Doctor Booking',
-                        image_url: IMAGE_GET_STARTED,
-                        buttons: [
+// let sendGetStartedTemplate = () => {
+//     let response = {
+//         attachment: {
+//             type: 'template',
+//             payload: {
+//                 template_type: 'generic',
+//                 elements: [
+//                     {
+//                         title: 'Chào mừng bạn đến với Doctor Booking',
+//                         subtitle: 'Dưới đây là các lựa chọn của Doctor Booking',
+//                         image_url: IMAGE_GET_STARTED,
+//                         buttons: [
+//                             {
+//                                 type: 'postback',
+//                                 title: 'XEM PHÒNG KHÁM',
+//                                 payload: 'VIEW_CLINIC',
+//                             },
+//                             {
+//                                 type: 'postback',
+//                                 title: 'CHỌN BÁC SĨ',
+//                                 payload: 'CHOSE_DOCTOR',
+//                             },
+//                             {
+//                                 type: 'postback',
+//                                 title: 'ĐẶT LỊCH KHÁM',
+//                                 payload: 'BOOKING',
+//                             },
+//                             {
+//                                 type: 'postback',
+//                                 title: 'HƯỚNG DẪN SỬ DỤNG BOT',
+//                                 payload: 'GUIDE_TO_USER',
+//                             },
+//                         ],
+//                     },
+//                 ],
+//             },
+//         },
+//     };
+//     return response;
+// };
+let handleBooking = (sender_psid) =>{
+    return new Promise(async(resolve,reject) => {
+        try{
+            let userName = await getUserName(sender_psid);
+            let response = {
+                attachment: {
+                    type: 'template',
+                    payload: {
+                        template_type: 'generic',
+                        elements: [
                             {
-                                type: 'postback',
-                                title: 'XEM PHÒNG KHÁM',
-                                payload: 'VIEW_CLINIC',
+                                title: 'Chào mừng bạn đến với Doctor Booking',
+                                subtitle: 'Dưới đây là các bác sĩ nổi bật theo khu vực',
+                                image_url: IMAGE_GET_STARTED,
+                                buttons: [
+                                    {
+                                        type: 'postback',
+                                        title: 'HÀ NỘI',
+                                        payload: 'DOCTOR_HANOI',
+                                    },
+
+                                    {
+                                        type: 'postback',
+                                        title: 'ĐÀ NẴNG',
+                                        payload: 'DOCTOR_DANANG',
+                                    },
+                                    {
+                                        type: 'postback',
+                                        title: 'HỒ CHÍ MINH',
+                                        payload: 'DOCTOR_HCM',
+                                    },
+                                ],
                             },
                             {
-                                type: 'postback',
-                                title: 'CHỌN BÁC SĨ',
-                                payload: 'CHOSE_DOCTOR',
+                                title: 'Chào mừng bạn đến với Doctor Booking',
+                                subtitle: 'Dưới đây là các phòng khám nổi bật theo khu vực',
+                                image_url: IMAGE_GET_STARTED,
+                                buttons: [
+                                    {
+                                        type: 'postback',
+                                        title: 'HÀ NỘI',
+                                        payload: 'CLINIC_HANOI',
+                                    },
+
+                                    {
+                                        type: 'postback',
+                                        title: 'ĐÀ NẴNG',
+                                        payload: 'CLINIC_DANANG',
+                                    },
+                                    {
+                                        type: 'postback',
+                                        title: 'HỒ CHÍ MINH',
+                                        payload: 'CLINIC_HCM',
+                                    },
+                                ],
                             },
                             {
-                                type: 'postback',
-                                title: 'ĐẶT LỊCH KHÁM',
-                                payload: 'BOOKING',
-                            },
-                            {
-                                type: 'postback',
-                                title: 'HƯỚNG DẪN SỬ DỤNG BOT',
-                                payload: 'GUIDE_TO_USER',
-                            },
+                                title: 'Chào mừng bạn đến với Doctor Booking',
+                                subtitle: 'Doctor booking có rất nhiều chuyên khoa với sự phục vụ từ hơn 1000 bác sĩ trãi dài trên khắp Việt Nam. Hứa hẹn sẽ phục vụ bạn thật chu đáo',
+                                image_url: IMAGE_GET_STARTED,
+                                buttons: [
+                                    {
+                                        type: 'postback',
+                                        title: 'Xem chi tiết',
+                                        payload: 'VIEW_SPECIALTY',
+                                    }
+                                ],
+                            }
                         ],
                     },
-                ],
-            },
-        },
-    };
-    return response;
-};
+                },
+            }
+            callSendApi(sender_psid,response)
+            resolve(response)
+        }
+        catch(e){
+            reject(e)
+        }
+    })
+}
 module.exports = {
     handleGetStarted: handleGetStarted,
+    handleBooking:handleBooking,
 };

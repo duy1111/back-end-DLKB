@@ -174,7 +174,10 @@ async function handlePostback(sender_psid, received_postback) {
             await chatboxServices.handleGetStarted(sender_psid);
 
             break;
+        case 'BOOKING':
+            await chatboxServices.handleBooking(sender_psid);
 
+            break;
         default:
             response = { text: `oop! I don't know response with postback ${payload}` };
     }
@@ -287,7 +290,7 @@ let setupPersistentMenu = async (req, res) => {
             }
         },
     );
-    return res.send('okkkkk');
+    return res.send('setup persistent menu');
 };
 export {
     getCRUD,
