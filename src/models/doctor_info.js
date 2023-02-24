@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
                 targetKey: 'keyMap',
                 as: 'provinceTypeData',
             });
-           
+            
 
         }
     }

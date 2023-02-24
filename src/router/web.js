@@ -15,6 +15,7 @@ import patientController from '../controller/patientController';
 import specialtyController from '../controller/specialtyController';
 import clinicController from '../controller/clinicController';
 import handleController from '../controller/handbookController'
+
 let router = express.Router();
 
 function initWebRoutes(app) {
@@ -27,11 +28,11 @@ function initWebRoutes(app) {
     router.get('/edit-user/:id', getEditUser);
     router.post('/update-user', putUser);
     router.post('/delete-user/', getDeleteUser);
-
     router.post('/webhook',postWebhook);
     router.get('/webhook',getWebhook)
-
+    
     //api
+    router.get('/test/top-doctor',userController.test)
     router.post('/api/login', userController.handleLogin);
     router.get('/api/get-all-user', userController.handleGetAllUsers);
     router.post('/api/create-new-user', userController.handleCreateNewUser);

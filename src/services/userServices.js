@@ -77,7 +77,6 @@ let getAllUser = (id) => {
             }
             users = await db.User.findAll({ raw: true, attributes: { exclude: ['password'] } });
 
-            
             resolve(users);
         } catch (e) {
             reject(e);
@@ -222,6 +221,48 @@ let getAllCodeServices = (typeInput) => {
         }
     });
 };
+
+let testTopDoctor = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let users = await db.Doctor_Infor.findAll({
+                limit: 5,
+                where: { provinceId: data.provinceId },
+
+                attributes: ['doctorId', 'provinceId'],
+                raw: true,
+            });
+            let topDoctor = [];
+            let length = users.length
+            console.log('check lenghth',length)
+            await users.map(async (item, index) => {
+              
+                let obj = {};
+                let doctor = await db.User.findOne({
+                    where: { id: item.doctorId },
+                    raw: true,
+                });
+
+                obj = { ...item, ...doctor };
+                topDoctor.push(obj);
+                length --;
+                console.log('----check length',length)
+                if(length === 0){
+                    console.log('check top doctor', topDoctor);
+                    resolve({
+                        data: topDoctor,
+                    });
+                }
+                return item;
+            });
+
+            
+        } catch (e) {
+            console.log(e);
+            reject(e);
+        }
+    });
+};
 module.exports = {
     handleUserLogin: handleUserLogin,
     getAllUser: getAllUser,
@@ -229,4 +270,5 @@ module.exports = {
     updateUser: updateUser,
     deleteUser: deleteUser,
     getAllCodeServices: getAllCodeServices,
+    testTopDoctor: testTopDoctor,
 };

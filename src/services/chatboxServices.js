@@ -1,4 +1,6 @@
 import { response } from 'express';
+import db from '../models/index';
+
 import request from 'request';
 require('dotenv').config();
 const IMAGE_GET_STARTED =
@@ -144,9 +146,9 @@ let handleGetStarted = (sender_psid) => {
 //     };
 //     return response;
 // };
-let handleBooking = (sender_psid) =>{
-    return new Promise(async(resolve,reject) => {
-        try{
+let handleBooking = (sender_psid) => {
+    return new Promise(async (resolve, reject) => {
+        try {
             let userName = await getUserName(sender_psid);
             let response = {
                 attachment: {
@@ -157,7 +159,8 @@ let handleBooking = (sender_psid) =>{
                             {
                                 title: 'Chào mừng bạn đến với Doctor Booking',
                                 subtitle: 'Dưới đây là các bác sĩ nổi bật theo khu vực',
-                                image_url: IMAGE_GET_STARTED,
+                                image_url:
+                                    'https://plus.unsplash.com/premium_photo-1664475521860-71798f722489?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8Y2xpbmljfGVufDB8fDB8fA%3D%3D&w=1000&q=80',
                                 buttons: [
                                     {
                                         type: 'postback',
@@ -180,7 +183,8 @@ let handleBooking = (sender_psid) =>{
                             {
                                 title: 'Chào mừng bạn đến với Doctor Booking',
                                 subtitle: 'Dưới đây là các phòng khám nổi bật theo khu vực',
-                                image_url: IMAGE_GET_STARTED,
+                                image_url:
+                                    'https://media.istockphoto.com/id/954802966/photo/healthcare-photos.jpg?s=612x612&w=0&k=20&c=DlouWo1_kZGmDwylkTElgkQUMWhFAy62D8BoyGiZX_0=',
                                 buttons: [
                                     {
                                         type: 'postback',
@@ -202,29 +206,113 @@ let handleBooking = (sender_psid) =>{
                             },
                             {
                                 title: 'Chào mừng bạn đến với Doctor Booking',
-                                subtitle: 'Doctor booking có rất nhiều chuyên khoa với sự phục vụ từ hơn 1000 bác sĩ trãi dài trên khắp Việt Nam. Hứa hẹn sẽ phục vụ bạn thật chu đáo',
+                                subtitle:
+                                    'Doctor booking có rất nhiều chuyên khoa với sự phục vụ từ hơn 1000 bác sĩ trãi dài trên khắp Việt Nam. Hứa hẹn sẽ phục vụ bạn thật chu đáo',
                                 image_url: IMAGE_GET_STARTED,
                                 buttons: [
                                     {
                                         type: 'postback',
                                         title: 'Xem chi tiết',
                                         payload: 'VIEW_SPECIALTY',
-                                    }
+                                    },
                                 ],
-                            }
+                            },
                         ],
                     },
                 },
+            };
+            callSendApi(sender_psid, response);
+            resolve(response);
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+let dataTopDoctor = (provinceId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let users = await db.Doctor_Infor.findAll({
+                limit: 5,
+                where: { provinceId: provinceId },
+
+                attributes: ['doctorId', 'provinceId'],
+                raw: true,
+            });
+            let topDoctor = [];
+            let length = users.length;
+            console.log('check lenghth', length);
+            await users.map(async (item, index) => {
+                let obj = {};
+                let doctor = await db.User.findOne({
+                    where: { id: item.doctorId },
+                    raw: true,
+                });
+
+                obj = { ...item, ...doctor };
+                topDoctor.push(obj);
+                length--;
+                
+                if (length === 0) {
+                  
+                    resolve({
+                        data: topDoctor,
+                    });
+                }
+                return item;
+            });
+        } catch (e) {
+            console.log(e);
+            reject(e);
+        }
+    });
+};
+let handleTopDoctor = (sender_psid, provinceId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let data = await dataTopDoctor(provinceId);
+            let province = '';
+            if (provinceId === 'PRO1') {
+                province = 'Hà Nội';
+            } else if (province === 'PRO2') {
+                province = 'Hồ Chí Minh';
+            } else if (province === 'PRO3') {
+                province = 'Đà Nẵng';
             }
+            let response = {
+                attachment: {
+                    type: 'template',
+                    payload: {
+                        template_type: 'generic',
+                        elements: [
+                            data.map((item, index) => {
+                                return({
+                                    title: `Dưới đây là các bác sĩ nổi bật ở ${province}`,
+                                    subtitle: `Bác sĩ ${item.name}`,
+                                    image_url:
+                                        'https://plus.unsplash.com/premium_photo-1664475521860-71798f722489?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8Y2xpbmljfGVufDB8fDB8fA%3D%3D&w=1000&q=80',
+                                    buttons: [
+                                        {
+                                            type: 'postback',
+                                            title: 'XEM CHI TIẾT',
+                                            payload: 'VIEW_DETAIL_DOCTOR',
+                                        },
+                                    ],
+                                });
+                            }),
+                        ],
+                    },
+                },
+            };
+            console.log('check ré doctor top',response)
             callSendApi(sender_psid,response)
-            resolve(response)
+            resolve('done')
+        } catch (e) {
+            reject(e);
         }
-        catch(e){
-            reject(e)
-        }
-    })
-}
+    });
+};
 module.exports = {
     handleGetStarted: handleGetStarted,
-    handleBooking:handleBooking,
+    handleBooking: handleBooking,
+    handleTopDoctor: handleTopDoctor,
 };

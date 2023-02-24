@@ -73,6 +73,20 @@ let getAllCode = async(req,res) => {
         })
     }
 }
+let test = async(req,res) => {
+    try{
+        let data = await userServices.testTopDoctor(req.body);
+        return res.status(200).json(data)
+        
+    }
+    catch(e){
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from server b'
+        })
+    }
+}
+
 module.exports = {
     handleLogin: handleLogin,
     handleGetAllUsers:handleGetAllUsers,
@@ -80,4 +94,5 @@ module.exports = {
     handleUpdateUser:handleUpdateUser,
     handleDeleteUser:handleDeleteUser,
     getAllCode:getAllCode,
+    test:test,
 };

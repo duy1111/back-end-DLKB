@@ -178,6 +178,22 @@ async function handlePostback(sender_psid, received_postback) {
             await chatboxServices.handleBooking(sender_psid);
 
             break;
+        case 'DOCTOR_HANOI':
+            await chatboxServices.handleTopDoctor(sender_psid,'PRO1');
+
+            break;
+        case 'DOCTOR_DANANG':
+            await chatboxServices.handleTopDoctor(sender_psid,'PRO3');
+            break;
+        case 'DOCTOR_HCM':
+            await chatboxServices.handleTopDoctor(sender_psid,'PRO2');
+            break;
+        case 'CLINIC_HANOI':
+            break;
+        case 'CLINIC_DANANG':
+            break;
+        case 'CLINIC_HCM':
+            break;
         default:
             response = { text: `oop! I don't know response with postback ${payload}` };
     }
