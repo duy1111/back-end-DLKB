@@ -5,6 +5,9 @@ var bodyParser = require('body-parser');
 import configViewEngine from './config/viewEngine';
 import initWebRoutes from './router/web';
 import connectDB from './config/connectDB';
+import cookieParser from 'cookie-parser';
+
+const cors = require('cors');
 dotenv.config();
 //var cors = require('cors');
 let app = express();
@@ -14,7 +17,13 @@ app.use(bodyParser.json({ limit: '50mb' }));
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
+app.use(cookieParser())
+app.use(cors());
 
+// Enable CORS for a specific origin
+app.use(cors({
+  origin: 'http://localhost:3000.com'
+}));
 //app.use(cors());
 app.use(function (req, res, next) {
     // Website you wish to allow to connect
@@ -33,6 +42,11 @@ app.use(function (req, res, next) {
     // Pass to next layer of middleware
     next();
 });
+
+
+
+
+
 
 // Verify that the callback came from Facebook.
 // function verifyRequestSignature(req, res, buf) {

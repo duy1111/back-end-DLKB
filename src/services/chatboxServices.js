@@ -246,6 +246,36 @@ let handleSpecialty = (sender_psid) => {
                         
                                 ],
                             },
+                            {
+                                title: 'Đặt lịch khám',
+                                subtitle: 'click vào nút đặt lịch để đặt lịch miễn phí',
+                                image_url:
+                                    'https://hips.hearstapps.com/hmg-prod/images/types-of-doctors-1600114658.jpg?crop=1.00xw:1.00xh;0,0&resize=1200:*',
+                                buttons: [
+                                    {
+                                        type: 'postback',
+                                        title: 'ĐẶT LỊCH KHÁM',
+                                        payload: 'BOOKING',
+                                    },
+
+                        
+                                ],
+                            },
+                            {
+                                title: 'Quay trở lại',
+                                subtitle: 'Quay trở lại trang đầu',
+                                image_url:
+                                    'https://cdn.bookingcare.vn/fr/w300/2019/12/16/175809-da-lieu.jpg',
+                                buttons: [
+                                    {
+                                        type: 'postback',
+                                        title: 'QUAY TRỞ LẠI',
+                                        payload: 'BACK_TO_SPECIALTY',
+                                    },
+
+                        
+                                ],
+                            },
                         ],
                     },
                 },
@@ -257,47 +287,12 @@ let handleSpecialty = (sender_psid) => {
         }
     });
 };
+let handleBackToSpecialty = async(sender_psid) =>{
+    await handleGetStarted(sender_psid)
+}
 
-let handleTopDoctor = (sender_psid) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-         
-            
-            let response = {
-                attachment: {
-                    type: 'template',
-                    payload: {
-                        template_type: 'generic',
-                        elements: [
-                            data.map((item, index) => {
-                                return(`{
-                                    title: "Dưới đây là các bác sĩ nổi bật ở ${province}",
-                                    subtitle: "Bác sĩ ${item.name}",
-                                    image_url:
-                                       '${item.image}',
-                                    buttons: [
-                                        {
-                                            type: 'postback',
-                                            title: 'XEM CHI TIẾT',
-                                            payload: 'VIEW_DETAIL_DOCTOR',
-                                        },
-                                    ],
-                                }`);
-                            }),
-                        ],
-                    },
-                },
-            };
-            console.log('check ré doctor top',response)
-            callSendApi(sender_psid,response)
-            resolve('done')
-        } catch (e) {
-            reject(e);
-        }
-    });
-};
 module.exports = {
     handleGetStarted: handleGetStarted,
-    handleSpecialty: handleSpecialty,
-    handleTopDoctor: handleTopDoctor,
+    handleSpecialty: handleSpecialty,  
+    handleBackToSpecialty:handleBackToSpecialty,
 };

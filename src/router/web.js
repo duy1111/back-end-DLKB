@@ -14,8 +14,9 @@ import doctorController from '../controller/doctorController';
 import patientController from '../controller/patientController';
 import specialtyController from '../controller/specialtyController';
 import clinicController from '../controller/clinicController';
+import authController from '../controller/authController';
 import handleController from '../controller/handbookController'
-
+import middlewareController from '../controller/middlewareController'
 let router = express.Router();
 
 function initWebRoutes(app) {
@@ -33,12 +34,14 @@ function initWebRoutes(app) {
     
     //api
     router.get('/test/top-doctor',userController.test)
-    router.post('/api/login', userController.handleLogin);
-    router.get('/api/get-all-user', userController.handleGetAllUsers);
+    router.post('/api/login',userController.handleLogin);
+    router.get('/api/get-all-user', middlewareController.checkTokenAdmin,userController.handleGetAllUsers);
     router.post('/api/create-new-user', userController.handleCreateNewUser);
     router.put('/api/update-user', userController.handleUpdateUser);
-    router.delete('/api/delete-user', userController.handleDeleteUser);
+    router.delete('/api/delete-user',middlewareController.verifyTokenAndAdminAuth ,userController.handleDeleteUser);
     router.get('/api/allCode', userController.getAllCode);
+    router.post('/api/refresh',userController.requestRefreshToken)
+    router.post('/api/logout',middlewareController.verifyToken,authController.userLogout)
 
     router.get('/api/top-doctor-home', doctorController.getTopDoctorHome);
     router.get('/api/get-all-doctor', doctorController.getAllDoctors);

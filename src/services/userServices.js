@@ -1,7 +1,32 @@
 import db from '../models/index';
 var bcrypt = require('bcryptjs');
 const salt = bcrypt.genSaltSync(10);
-let handleUserLogin = (email, password) => {
+const jwt = require('jsonwebtoken');
+const RefreshToken = db.RefreshToken;
+import AuthController from '../controller/authController';
+require('dotenv').config();
+//GENERATE ACCESS TOKEN
+let generateAccessToken = (user) => {
+    return jwt.sign(
+        {
+            userId: user.id,
+            roleId: user.roleId,
+        },
+        process.env.JWT_ACCESS_KEY,
+        { expiresIn: '2h' },
+    );
+};
+let generateRefreshToken = (user) => {
+    return jwt.sign(
+        {
+            userId: user.id,
+            roleId: user.roleId,
+        },
+        process.env.JWT_REFRESH_KEY,
+        { expiresIn: '360d' },
+    );
+};
+let handleUserLogin = (res, email, password) => {
     return new Promise(async (resolve, reject) => {
         try {
             let userData = {};
@@ -20,17 +45,33 @@ let handleUserLogin = (email, password) => {
 
                     let check = await bcrypt.compareSync(password, user.password); // false
                     if (check) {
+                        let accessToken = generateAccessToken(user);
+                        let refreshToken = generateRefreshToken(user);
+                        const tokenDoc = await db.RefreshToken.create({ userId: user.id, token: refreshToken });
+                        res.cookie('refreshToken', refreshToken, {
+                            httpOnly: true,
+                            secure: false,
+                            path: '/',
+                            sameSite: 'strict',
+                        });
+
                         delete user.password;
+
                         userData.errCode = 0;
                         userData.message = 'ok';
+                        userData.accessToken = accessToken;
+
                         userData.user = user;
                     } else {
                         userData.errCode = 3;
                         userData.message = 'wrong password';
+                        userData.accessToken = '';
                     }
                 } else {
                     userData.errCode = 2;
                     userData.message = `Your user email isn't exist in your system. Plz try other email`;
+                    userData.accessToken = '';
+
                     //return error
                     resolve(userData);
                 }
@@ -41,6 +82,47 @@ let handleUserLogin = (email, password) => {
                 userData.message = `Your user email isn't exist in your system. Plz try other email`;
                 //return error
                 resolve(userData);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+let requestRefreshToken = (refreshToken,res) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
+            const token = await RefreshToken.findOne({ where: { userId: decoded.userId, token: refreshToken } });
+            console.log('check token refresh', decoded.userId,decoded.roleId);
+            console.log('check token refresh', token);
+            
+            
+            if (!token) {
+                resolve({
+                    errCode: -1,
+                });
+            } else {
+                let accessToken = jwt.sign(
+                    { userId: decoded.userId, roleId: decoded.roleId },
+                    process.env.JWT_ACCESS_KEY,
+                    {
+                        expiresIn: '2h',
+                    },
+                );
+                console.log('check access token', token);
+
+                let newRefreshToken = await AuthController.generateRefreshToken(decoded.userId, decoded.roleId);
+                res.cookie('refreshToken', newRefreshToken, {
+                    httpOnly: true,
+                    secure: false,
+                    path: '/',
+                    sameSite: 'strict',
+                });
+                resolve({
+                    accessToken: accessToken,
+                   
+                });
             }
         } catch (e) {
             reject(e);
@@ -70,12 +152,12 @@ let getAllUser = (id) => {
         try {
             let users = {};
             if (id) {
-                users = await db.User.findOne({ where: { id: id }, raw: true, attributes: { exclude: ['password'] } });
+                users = await db.User.findOne({ where: { id: id }, raw: true, attributes: { exclude: ['password','image'] } });
                 //delete users.password;
 
                 resolve(users);
             }
-            users = await db.User.findAll({ raw: true, attributes: { exclude: ['password'] } });
+            users = await db.User.findAll({ raw: true, attributes: { exclude: ['password','image'] } });
 
             resolve(users);
         } catch (e) {
@@ -233,10 +315,9 @@ let testTopDoctor = (data) => {
                 raw: true,
             });
             let topDoctor = [];
-            let length = users.length
-            console.log('check lenghth',length)
+            let length = users.length;
+            console.log('check lenghth', length);
             await users.map(async (item, index) => {
-              
                 let obj = {};
                 let doctor = await db.User.findOne({
                     where: { id: item.doctorId },
@@ -245,9 +326,9 @@ let testTopDoctor = (data) => {
 
                 obj = { ...item, ...doctor };
                 topDoctor.push(obj);
-                length --;
-                console.log('----check length',length)
-                if(length === 0){
+                length--;
+                console.log('----check length', length);
+                if (length === 0) {
                     console.log('check top doctor', topDoctor);
                     resolve({
                         data: topDoctor,
@@ -255,8 +336,6 @@ let testTopDoctor = (data) => {
                 }
                 return item;
             });
-
-            
         } catch (e) {
             console.log(e);
             reject(e);
@@ -271,4 +350,5 @@ module.exports = {
     deleteUser: deleteUser,
     getAllCodeServices: getAllCodeServices,
     testTopDoctor: testTopDoctor,
+    requestRefreshToken: requestRefreshToken,
 };

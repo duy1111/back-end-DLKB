@@ -178,15 +178,8 @@ async function handlePostback(sender_psid, received_postback) {
             await chatboxServices.handleSpecialty(sender_psid);
 
             break;
-        case 'DOCTOR_HANOI':
-            await chatboxServices.handleTopDoctor(sender_psid,'PRO1');
-
-            break;
-        case 'DOCTOR_DANANG':
-            await chatboxServices.handleTopDoctor(sender_psid,'PRO3');
-            break;
-        case 'DOCTOR_HCM':
-            await chatboxServices.handleTopDoctor(sender_psid,'PRO2');
+        case 'BACK_TO_SPECIALTY':
+            await chatboxServices.handleBackToSpecialty(sender_psid);
             break;
         case 'CLINIC_HANOI':
             break;
