@@ -15,9 +15,14 @@ let getTopDoctorHome = (limit) => {
                 include: [
                     { model: db.allCodes, as: 'positionData', attributes: ['valueEn', 'valueVi'] },
                     { model: db.allCodes, as: 'genderData', attributes: ['valueEn', 'valueVi'] },
+                    {
+                        model: db.Doctor_Infor,
+                        attributes: { exclude: ['id', 'doctorId'] },
+                        include: [{ model: db.specialty, as: 'specialtyData', attributes: ['name'] }],
+                    },
                 ],
             });
-            
+
             resolve(users);
         } catch (e) {
             reject(e);
@@ -186,6 +191,22 @@ let bulkCreateSchedule = (data) => {
                         return item;
                     });
                 }
+                
+                let arr = [];
+                if (data.forWeek === true && schedule && schedule.length > 0) {
+                    for (let i = 0; i < 7; i++) {
+                        schedule.forEach((item) => {
+                            let newItem = Object.assign({}, item); // Tạo ra một object mới để tránh tham chiếu
+                            newItem.date = item.date + 86400000 * i; // Cập nhật giá trị date mới
+                            arr.push(newItem); // Thêm item mới vào mảng
+                        });
+                    }
+                }
+                
+                if(arr && arr.length>0){
+                    schedule = arr;
+                }
+                console.log('check schedule', schedule);
                 let existing = await db.Schedule.findAll({
                     where: { doctorId: data.doctorId, date: data.date },
                     attributes: ['timeType', 'date', 'doctorId', 'maxNumber'],
@@ -202,7 +223,7 @@ let bulkCreateSchedule = (data) => {
                 let toCreate = _.differenceWith(schedule, existing, (a, b) => {
                     return a.timeType === b.timeType && +a.date === +b.date;
                 });
-                
+
                 //create data
                 if (toCreate && toCreate.length > 0) {
                     await db.Schedule.bulkCreate(toCreate);
@@ -211,6 +232,7 @@ let bulkCreateSchedule = (data) => {
                 resolve({
                     errCode: 0,
                     message: 'ok',
+                    data: arr,
                 });
             }
         } catch (e) {
@@ -237,7 +259,7 @@ let getScheduleByDate = (id, date) => {
                     raw: false,
                     nest: true,
                 });
-               
+
                 if (!data) {
                     data = [];
                 }
@@ -378,8 +400,8 @@ let sendRemedy = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
             await emailServices.sendAttachment(data);
-            console.log('check data',data)
-            
+            console.log('check data', data);
+
             let appointment = await db.bookings.findOne({
                 where: {
                     doctorId: data.doctorId,
@@ -390,7 +412,7 @@ let sendRemedy = (data) => {
                 },
                 raw: false,
             });
-            console.log('check app',appointment)
+            console.log('check app', appointment);
             if (appointment) {
                 appointment.statusId = 'S3';
                 await appointment.save();

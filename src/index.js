@@ -2,6 +2,7 @@ import express from 'express';
 import * as dotenv from 'dotenv'; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 dotenv.config();
 var bodyParser = require('body-parser');
+
 import configViewEngine from './config/viewEngine';
 import initWebRoutes from './router/web';
 import connectDB from './config/connectDB';
@@ -19,6 +20,7 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 app.use(cookieParser())
 app.use(cors());
+
 
 // Enable CORS for a specific origin
 app.use(cors({

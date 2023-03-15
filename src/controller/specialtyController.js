@@ -61,6 +61,7 @@ let handleUpdateSpecialty = async (req, res) => {
         });
     }
 };
+
 module.exports = {
     createSpecialty,
     getAllSpecialty,
