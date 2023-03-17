@@ -147,6 +147,20 @@ let sendRemedy = async(req,res) => {
         })
     }
 }
+let getDoctorSearch = async(req,res) => {
+    try{
+        console.log('check name',req.query.name)
+        let data = await doctorServices.getDoctorSearch(req.query.name);
+        return res.status(200).json(data)
+    }
+    catch(e){
+        console.log(e)
+        return res.status(400).json({
+            errCode : -1,
+            message:'Error from server...'
+        })
+    }
+}
 module.exports = {
     getTopDoctorHome:getTopDoctorHome,
     getAllDoctors:getAllDoctors,
@@ -158,5 +172,6 @@ module.exports = {
     getProfileDoctorById:getProfileDoctorById,
     getListPatientForDoctor:getListPatientForDoctor,
     sendRemedy:sendRemedy,
+    getDoctorSearch:getDoctorSearch,
     
 }

@@ -3,6 +3,7 @@ import _ from 'lodash';
 require('dotenv').config();
 import emailServices from './emailServices';
 import { v4 as uuidv4 } from 'uuid';
+const { Sequelize } = require('sequelize');
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
 let getTopDoctorHome = (limit) => {
     return new Promise(async (resolve, reject) => {
@@ -191,7 +192,7 @@ let bulkCreateSchedule = (data) => {
                         return item;
                     });
                 }
-                
+
                 let arr = [];
                 if (data.forWeek === true && schedule && schedule.length > 0) {
                     for (let i = 0; i < 7; i++) {
@@ -202,8 +203,8 @@ let bulkCreateSchedule = (data) => {
                         });
                     }
                 }
-                
-                if(arr && arr.length>0){
+
+                if (arr && arr.length > 0) {
                     schedule = arr;
                 }
                 console.log('check schedule', schedule);
@@ -427,6 +428,88 @@ let sendRemedy = (data) => {
         }
     });
 };
+let getDoctorSearch = (name) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!name) {
+                let data = await db.User.findAll({
+                    where: {
+                        roleId: 'R2',
+                    },
+                    attributes: { exclude: ['password'] },
+                    include: [
+                        { model: db.allCodes, as: 'positionData', attributes: ['valueEn', 'valueVi'] },
+                        
+                        {
+                            model: db.Doctor_Infor,
+                            attributes: { exclude: ['id', 'doctorId'] },
+                            include: [{ model: db.specialty, as: 'specialtyData', attributes: ['name'] }],
+                        },
+                    ],
+                    limit: 10,
+                    offset: 0,
+                });
+                if (data && data.length > 0) {
+                    data.map((item) => {
+                        item.image = Buffer.from(item.image, 'base64').toString('binary');
+                        return item;
+                    });
+                }
+                resolve({
+                    errCode: 0,
+                    message: 'ok',
+                    data: data,
+                });
+            } else {
+                let data = await db.User.findAll({
+                    where: {
+                        roleId: 'R2',
+
+                        [Sequelize.Op.or]: [
+                            {
+                                lastName: {
+                                    [Sequelize.Op.like]: `%${name}%`,
+                                },
+                            },
+                            {
+                                firstName: {
+                                    [Sequelize.Op.like]: `%${name}%`,
+                                },
+                            },
+                        ],
+
+                    },
+                    attributes: { exclude: ['password'] },
+                    include: [
+                        { model: db.allCodes, as: 'positionData', attributes: ['valueEn', 'valueVi'] },
+                        
+                        {
+                            model: db.Doctor_Infor,
+                            attributes: { exclude: ['id', 'doctorId'] },
+                            include: [{ model: db.specialty, as: 'specialtyData', attributes: ['name'] }],
+                        },
+                    ],
+                    limit: 10,
+                    offset: 0,
+                });
+                if (data && data.length > 0) {
+                    data.map((item) => {
+                        item.image = Buffer.from(item.image, 'base64').toString('binary');
+                        return item;
+                    });
+                }
+                resolve({
+                    errCode: 0,
+                    message: 'ok',
+                    data: data,
+                });
+            }
+        } catch (e) {
+            console.log('check e', e);
+            reject(e);
+        }
+    });
+};
 module.exports = {
     getTopDoctorHome: getTopDoctorHome,
     getAllDoctors: getAllDoctors,
@@ -438,4 +521,5 @@ module.exports = {
     getProfileDoctorById: getProfileDoctorById,
     getListPatientForDoctor: getListPatientForDoctor,
     sendRemedy: sendRemedy,
+    getDoctorSearch: getDoctorSearch,
 };

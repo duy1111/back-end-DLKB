@@ -53,6 +53,7 @@ function initWebRoutes(app) {
 
     router.get('/api/top-doctor-home', doctorController.getTopDoctorHome);
     router.get('/api/get-all-doctor', doctorController.getAllDoctors);
+    router.get('/api/get-doctor-search',doctorController.getDoctorSearch)
     router.post('/api/save-info-doctor', doctorController.postInfoDoctor);
     router.get('/api/get-detail-doctor-by-id', doctorController.getDetailDoctorById);
     router.post('/api/bulk-create-schedule', doctorController.bulkCreateSchedule);
