@@ -62,6 +62,9 @@ let handleUserLogin = (res, email, password) => {
                         userData.accessToken = accessToken;
 
                         userData.user = user;
+                        // Attach access token to the header
+                        res.setHeader('authorization', `Bearer ${accessToken}`);
+
                     } else {
                         userData.errCode = 3;
                         userData.message = 'wrong password';

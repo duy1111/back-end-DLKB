@@ -468,12 +468,12 @@ let getDoctorSearch = (name) => {
                         [Sequelize.Op.or]: [
                             {
                                 lastName: {
-                                    [Sequelize.Op.like]: `%${name}%`,
+                                    [Sequelize.Op.iLike]: `%${name}%`,
                                 },
                             },
                             {
                                 firstName: {
-                                    [Sequelize.Op.like]: `%${name}%`,
+                                    [Sequelize.Op.iLike]: `%${name}%`,
                                 },
                             },
                         ],

@@ -1,11 +1,11 @@
 const jwt = require('jsonwebtoken');
 
 let verifyToken = (req, res, next) => {
-    console.log('check token nn', req);
+    
 
     try {
         const token = req.headers.authorization.split(' ')[1];
-        console.log('check token nn', req);
+        
 
         if (!token) {
             return res.status(401).send('Access denied. No token provided.');
