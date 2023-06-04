@@ -4,6 +4,7 @@ const salt = bcrypt.genSaltSync(10);
 const jwt = require('jsonwebtoken');
 const RefreshToken = db.RefreshToken;
 import AuthController from '../controller/authController';
+
 require('dotenv').config();
 //GENERATE ACCESS TOKEN
 let generateAccessToken = (user) => {
@@ -91,7 +92,51 @@ let handleUserLogin = (res, email, password) => {
         }
     });
 };
+let handleRegister = (req,email,password) => {
+    return new Promise(async (resolve, reject) => {
+        try{
+            let userData = {};
+            let isExist = await checkUserEmail(email);
+            let data= req.body
+            if (!isExist) {
+                //user already exist
 
+                let hashPasswordFromBcrypt = await hashUserPassword(password);
+                let user = await db.User.create({
+                    email: email,
+                    password: hashPasswordFromBcrypt,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    address: data.address,
+                    gender: data.gender,
+                    roleId: 'R2',
+                    positionId: 'P2',
+                    phoneNumber: data.phoneNumber,
+                    image: '',
+                });
+                
+                 
+                userData.errCode = 0;
+                userData.message = `Register succeed`;
+                 
+
+                    //return error
+                resolve(userData);
+                
+
+               
+            } else {
+                userData.errCode = 1;
+                userData.message = `Tour email is exist. Plz try other email`;
+                //return error
+                resolve(userData);
+            }
+            
+        }catch(e){
+            reject(e)
+        }
+    })
+}
 let requestRefreshToken = (refreshToken,res) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -354,4 +399,5 @@ module.exports = {
     getAllCodeServices: getAllCodeServices,
     testTopDoctor: testTopDoctor,
     requestRefreshToken: requestRefreshToken,
+    handleRegister: handleRegister,
 };

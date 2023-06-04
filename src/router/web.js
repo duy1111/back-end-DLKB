@@ -50,6 +50,7 @@ function initWebRoutes(app) {
     router.get('/api/allCode', userController.getAllCode);
     router.post('/api/refresh', userController.requestRefreshToken);
     router.post('/api/logout', middlewareController.verifyToken, authController.userLogout);
+    router.post('/api/register', userController.handleRegister)
 
     router.get('/api/top-doctor-home', doctorController.getTopDoctorHome);
     router.get('/api/get-all-doctor', doctorController.getAllDoctors);
