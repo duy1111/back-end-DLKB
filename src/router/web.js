@@ -43,10 +43,10 @@ function initWebRoutes(app) {
     //api
     router.get('/test/top-doctor', userController.test);
     router.post('/api/login', userController.handleLogin);
-    router.get('/api/get-all-user', middlewareController.checkTokenAdmin, userController.handleGetAllUsers);
+    router.get('/api/get-all-user', userController.handleGetAllUsers);
     router.post('/api/create-new-user', userController.handleCreateNewUser);
     router.put('/api/update-user', userController.handleUpdateUser);
-    router.delete('/api/delete-user', middlewareController.verifyTokenAndAdminAuth, userController.handleDeleteUser);
+    router.delete('/api/delete-user', userController.handleDeleteUser);
     router.get('/api/allCode', userController.getAllCode);
     router.post('/api/refresh', userController.requestRefreshToken);
     router.post('/api/logout', middlewareController.verifyToken, authController.userLogout);

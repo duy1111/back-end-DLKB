@@ -102,7 +102,7 @@ let handleRegister = (req,email,password) => {
                 //user already exist
 
                 let hashPasswordFromBcrypt = await hashUserPassword(password);
-                let user = await db.User.create({
+                await db.User.create({
                     email: email,
                     password: hashPasswordFromBcrypt,
                     firstName: data.firstName,
