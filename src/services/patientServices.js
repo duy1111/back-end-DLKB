@@ -1,5 +1,5 @@
 import db from '../models/index';
-import _ from 'lodash';
+import _, { reject } from 'lodash';
 require('dotenv').config();
 var bcrypt = require('bcryptjs');
 const salt = bcrypt.genSaltSync(10);
@@ -12,7 +12,10 @@ let buildUrlEmail = (doctorId, token) => {
     let result = `${process.env.URL_REACT}/verify-booking?token=${token}&&doctorId=${doctorId}`;
     return result;
 };
+
 let postBookAppointment = (data) => {
+    
+
     return new Promise(async (resolve, reject) => {
         try {
             console.log('check dât',data)
@@ -22,6 +25,7 @@ let postBookAppointment = (data) => {
                     errCode: 1,
                     message: 'Missing parameter!',
                 });
+                
             } else {
                 let token = uuidv4();
 
@@ -87,6 +91,7 @@ let hashUserPassword = (password) => {
     });
 };
 let postVerifyBookAppointment = (data) => {
+    console.log('postVerifyBookAppointment',data)
     return new Promise(async (resolve, reject) => {
         try {
             if (!data.token || !data.doctorId) {

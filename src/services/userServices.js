@@ -5,6 +5,12 @@ const jwt = require('jsonwebtoken');
 const RefreshToken = db.RefreshToken;
 import AuthController from '../controller/authController';
 
+
+
+require('dotenv').config();
+import emailServices from './emailServices';
+import { v4 as uuidv4 } from 'uuid';
+
 require('dotenv').config();
 //GENERATE ACCESS TOKEN
 let generateAccessToken = (user) => {
@@ -390,6 +396,89 @@ let testTopDoctor = (data) => {
         }
     });
 };
+
+let buildUrlEmail = (password, email) => {
+    // ⇨ '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
+
+    let result = `${process.env.URL_REACT}/verify-password?email=${email}&&password=${password}`;
+    return result;
+};
+let confirmPassword = (data) => {
+    
+    return new Promise(async(resolve,reject) => {
+        try{
+            if(!data.email || !data.password){
+                resolve({
+                    errCode: 1,
+                    message: 'Missing parameter!',
+                });
+            }
+            else{
+                let Users = await db.User.findOne({
+                    where: { email: data.email },      
+                });
+                if(Users){
+                    
+                    await emailServices.confirmPassword({
+                        receiverEmail: data.email,
+                        redirectLink: buildUrlEmail(data.password, data.email),
+                    });
+                    resolve({
+                        errCode: 0,
+                        message: 'ok',
+                    });           
+                   
+                } 
+                
+                resolve({
+                    errCode: 2,
+                    message: 'Please, Check user ',
+                });
+            }
+        }
+        catch(e){
+            reject(e)
+        }
+    })
+}
+let verifyConfirmPassword = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!data.email || !data.password ) {
+                resolve({
+                    errCode: 1,
+                    message: 'Missing parameter!',
+                });
+            } else {
+                let hashPasswordFromBcrypt = await hashUserPassword(data.password);
+                let Users = await db.User.findOne({
+                    where: { email: data.email },
+                    
+                    
+                });
+                if (Users) {
+                    Users.password = hashPasswordFromBcrypt
+    
+                    await Users.save();
+                    
+                    resolve({
+                        errCode: 0,
+                        message: 'ok',
+                    });
+                }
+               
+                else {
+                    resolve({
+                        errCode: 2,
+                        message: 'Please enter the correct email ',
+                    });
+                }
+            }
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
 module.exports = {
     handleUserLogin: handleUserLogin,
     getAllUser: getAllUser,
@@ -400,4 +489,6 @@ module.exports = {
     testTopDoctor: testTopDoctor,
     requestRefreshToken: requestRefreshToken,
     handleRegister: handleRegister,
+    confirmPassword:confirmPassword,
+    verifyConfirmPassword:verifyConfirmPassword
 };

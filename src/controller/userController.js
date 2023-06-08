@@ -108,6 +108,35 @@ let test = async (req, res) => {
     }
 };
 
+
+let handleResetPassword = async (req, res) => {
+    try {     
+        let data = await userServices.confirmPassword(req.body);
+        return res.status(200).json(data);
+    } catch (e) {
+        console.log(e);
+        return res.status(400).json({
+            errCode: -1,
+            message: 'Error from server...',
+        });
+    }
+};
+
+let handleVerifyResetPassword = async (req, res) => {
+    console.log(req.body)
+
+    try {
+        let data = await userServices.verifyConfirmPassword(req.body);
+        return res.status(200).json(data);
+    } catch (e) {
+        console.log(e);
+        return res.status(400).json({
+            errCode: -1,
+            message: 'Error from server...',
+        });
+    }
+};
+
 module.exports = {
     handleLogin: handleLogin,
     handleGetAllUsers: handleGetAllUsers,
@@ -118,4 +147,6 @@ module.exports = {
     test: test,
     requestRefreshToken:requestRefreshToken,
     handleRegister:handleRegister,
+    handleResetPassword:handleResetPassword,
+    handleVerifyResetPassword:handleVerifyResetPassword,
 };

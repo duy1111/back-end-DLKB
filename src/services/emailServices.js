@@ -20,6 +20,26 @@ let sendSimpleEmail = async (dataSend) => {
         html: getBodyHTMLEmail(dataSend), // html body
     });
 };
+let confirmPassword = async (dataSend) => {
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+            user: process.env.EMAIL_APP, // generated ethereal user
+            pass: process.env.EMAIL_APP_PASSWORD, // generated ethereal password
+        },
+    });
+
+    // send mail with defined transport object
+    let info = await transporter.sendMail({
+        from: '"Fred Foo 👻" <maixuanduy0605@gmail.com>', // sender address
+        to: dataSend.receiverEmail, // list of receivers
+        subject: 'Xác nhận reset mật khâu', // Subject line
+
+        html: getBodyHTMLEmail(dataSend), // html body
+    });
+};
 
 let getBodyHTMLEmail = (dataSend) => {
     let result = '';
@@ -39,7 +59,7 @@ let getBodyHTMLEmail = (dataSend) => {
 
         <div>Xin chân thành cảm ơn!</div>
     `;
-    } else {
+    } else if(dataSend.language === 'en') {
         result = `
         <h3>Dear ${dataSend.patientName}!</h3>
         <p>You received this email because you booked an online medical appointment on Booking</p>
@@ -49,6 +69,17 @@ let getBodyHTMLEmail = (dataSend) => {
 
         <p>If the above information is true, please click on the link below to confirm and complete the medical appointment booking procedure.</p>
 
+        <div><a href="${dataSend.redirectLink}" target="_blank" >
+            Click here
+        </a></div>
+
+        <div>Sincerely thank!</div>
+    `;
+    }
+    else{
+        result = `
+       
+        <p>Bạn cần click vào đây để reset password</p>
         <div><a href="${dataSend.redirectLink}" target="_blank" >
             Click here
         </a></div>
@@ -116,4 +147,5 @@ let getBodyHTMLEmailRemedy = (dataSend) => {
 module.exports = {
     sendSimpleEmail,
     sendAttachment,
+    confirmPassword,
 };

@@ -41,6 +41,8 @@ function initWebRoutes(app) {
     router.get('/webhook', getWebhook);
 
     //api
+    router.post('/api/reset-password', userController.handleResetPassword)
+    router.post('/api/verify-reset-password', userController.handleVerifyResetPassword)
     router.get('/test/top-doctor', userController.test);
     router.post('/api/login', userController.handleLogin);
     router.get('/api/get-all-user', middlewareController.checkTokenAdmin, userController.handleGetAllUsers);
@@ -51,6 +53,8 @@ function initWebRoutes(app) {
     router.post('/api/refresh', userController.requestRefreshToken);
     router.post('/api/logout', middlewareController.verifyToken, authController.userLogout);
     router.post('/api/register', userController.handleRegister)
+    
+    
 
     router.get('/api/top-doctor-home', doctorController.getTopDoctorHome);
     router.get('/api/get-all-doctor', doctorController.getAllDoctors);
